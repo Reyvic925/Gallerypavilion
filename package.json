@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
+  "test": "vitest",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint src --ext .ts,.tsx,.js,.jsx --ignore-pattern out/** --ignore-pattern .next/** --ignore-pattern prisma/** --max-warnings=0",
@@ -39,6 +40,7 @@
     "zod": "^4.1.5"
   },
   "devDependencies": {
+  "vitest": "^1.0.0",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
@@ -55,5 +57,9 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
+  }
+  ,
+  "vitest": {
+    "setupFiles": ["./src/__tests__/vitest.setup.ts"]
   }
 }

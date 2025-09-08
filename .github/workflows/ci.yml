@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, '**/ci/**', 'ci/remove-dev-test-db' ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18.x, 20.x, 22.x]
+
+    env:
+      CI: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: Cache Prisma engines
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/prisma
+            .prisma
+          key: prisma-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('**/prisma/schema.prisma') }}
+          restore-keys: |
+            prisma-${{ runner.os }}-${{ matrix.node }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Run tests (Vitest)
+        id: run-tests
+        continue-on-error: true
+        run: |
+          # Run vitest with junit reporter and capture exit code for later
+          npx vitest run --reporter junit --outputFile=vitest-junit.xml
+          echo $? > test_exit_code
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-junit
+          path: vitest-junit.xml
+
+      - name: Upload test exit code
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-exit-code
+          path: test_exit_code
+
+      - name: Fail job if tests failed
+        if: always()
+        run: |
+          code=$(cat test_exit_code)
+          if [ "$code" != "0" ]; then
+            echo "Tests failed with exit code $code"
+            exit $code
+          fi
