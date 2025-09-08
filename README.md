@@ -51,3 +51,20 @@ src/
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Email configuration (Namecheap Private Email)
+
+Gallery Pavilion sends transactional emails (invitations, approval/rejection notices) via SMTP. For Namecheap Private Email use the following environment variables in your deployment or local .env:
+
+```
+EMAIL_SERVER_HOST=smtp.privateemail.com
+EMAIL_SERVER_PORT=587
+EMAIL_SERVER_USER=your@domain.com
+EMAIL_SERVER_PASSWORD=yourpassword
+EMAIL_FROM="Gallery Pavilion <noreply@gallerypavilion.com>"
+```
+
+- Use a strong, unique password for `EMAIL_SERVER_PASSWORD` and keep it secret (don't commit to Git).
+- If your provider requires SSL, set `EMAIL_SERVER_SECURE=true` and adjust `EMAIL_SERVER_PORT` accordingly (typically 465).
+- On production, prefer a dedicated transactional email provider (SendGrid, Postmark) for better deliverability and analytics.
+

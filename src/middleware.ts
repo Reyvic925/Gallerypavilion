@@ -49,10 +49,15 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Protect photographer routes
+  // Protect photographer routes: require token presence.
+  // Redirect to photographer login and preserve the requested URL as `next` so
+  // the app can navigate back after successful authentication.
   if (pathname.startsWith('/photographer') || pathname.startsWith('/dashboard')) {
     if (!hasToken) {
-      return NextResponse.redirect(new URL('/auth/photographer-login', request.url))
+      const returnTo = `${request.nextUrl.pathname}${request.nextUrl.search || ''}`
+      const loginUrl = new URL('/auth/photographer-login', request.url)
+      loginUrl.searchParams.set('next', returnTo)
+      return NextResponse.redirect(loginUrl)
     }
   }
 

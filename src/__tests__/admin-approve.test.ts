@@ -10,16 +10,42 @@ describe('admin approve flow', () => {
   beforeEach(() => resetTestDb())
 
   it('approves a pending photographer', async () => {
-    const user = await testPrisma.user.create({ data: { email: 'pend@example.com', role: 'photographer' } })
-    const phot = await testPrisma.photographer.create({ data: { userId: user.id, name: 'P', status: 'pending' } })
+    const user = await testPrisma.user.create({ 
+      data: { 
+        email: 'pend@example.com', 
+        role: 'photographer',
+      }
+    })
+    
+    const phot = await testPrisma.photographer.create({ 
+      data: { 
+        userId: user.id,
+        name: 'P',
+        status: 'pending'
+      }
+    })
+
+    // Verify initial state
+    const initial = await testPrisma.photographer.findFirst({ where: { id: phot.id } })
+    expect(initial?.status).toBe('pending')
 
     // Call the approve route handler directly
     const { POST } = await import('../app/api/admin/photographers/[id]/approve/route')
     const fakeReq: any = { url: `http://localhost/api/admin/photographers/${phot.id}/approve` }
     const res: any = await POST(fakeReq)
+    
+    // Verify response
     expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.ok).toBe(true)
 
-    const refreshed = await testPrisma.photographer.findUnique({ where: { id: phot.id } })
+    // Verify database update - make sure to wait for any async operations
+    const refreshed = await testPrisma.photographer.findFirst({ 
+      where: { 
+        id: phot.id
+      }
+    })
+    
     expect(refreshed?.status).toBe('approved')
   })
 })

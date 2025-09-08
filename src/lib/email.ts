@@ -19,46 +19,35 @@ interface InviteEmailData {
 
 // Create email transporter with local testing fallback
 async function createTransporter() {
-  // Check if we're in development mode or if Gmail credentials are missing
-  const isDevelopment = process.env.NODE_ENV !== 'production'
-  const hasGmailCredentials = process.env.EMAIL_SERVER_USER && process.env.EMAIL_SERVER_PASSWORD
-  
-  if (isDevelopment || !hasGmailCredentials) {
-    console.log('Using Gmail SMTP for production')
-    // Use Gmail SMTP for production
-    return nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_SERVER_USER,
-        pass: process.env.EMAIL_SERVER_PASSWORD
-      }
-    })
-  }
-  
-  // Production Gmail configuration
-  console.log('Using Gmail SMTP configuration...')
+  // Build SMTP config favoring environment variables. Default to
+  // Namecheap Private Email SMTP (smtp.privateemail.com) when not provided.
+  const host = process.env.EMAIL_SERVER_HOST || 'smtp.privateemail.com'
+  const port = parseInt(process.env.EMAIL_SERVER_PORT || '587')
+  const secure = (process.env.EMAIL_SERVER_SECURE || 'false') === 'true'
+  const user = process.env.EMAIL_SERVER_USER || ''
+  const pass = process.env.EMAIL_SERVER_PASSWORD || ''
+
+  console.log(`Creating SMTP transporter for host=${host} port=${port} secure=${secure}`)
+
   const config = {
-    host: process.env.EMAIL_SERVER_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.EMAIL_SERVER_PORT || '587'),
-    secure: false, // Use STARTTLS instead of SSL for port 587
+    host,
+    port,
+    secure,
     requireTLS: true,
     auth: {
-      user: process.env.EMAIL_SERVER_USER || '',
-      pass: process.env.EMAIL_SERVER_PASSWORD || ''
+      user,
+      pass
     },
-    // Extended timeouts to handle network issues
-    connectionTimeout: 60000, // 60 seconds
-    greetingTimeout: 30000,   // 30 seconds
-    socketTimeout: 60000,     // 60 seconds
-    // Connection pooling for better performance
+    connectionTimeout: 60000,
+    greetingTimeout: 30000,
+    socketTimeout: 60000,
     pool: true,
     maxConnections: 5,
     maxMessages: 100,
-    rateLimit: 14, // 14 emails per second max
-    // TLS options for better compatibility
+    rateLimit: 14,
     tls: {
-      rejectUnauthorized: false,
-      ciphers: 'SSLv3'
+      // For some SMTP providers, including Namecheap, this may be necessary in some environments.
+      rejectUnauthorized: false
     }
   }
 
@@ -237,7 +226,7 @@ export async function sendInviteEmail(data: InviteEmailData): Promise<boolean> {
   }
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || `"Private Gallery" <${process.env.EMAIL_SERVER_USER}>`,
+    from: process.env.EMAIL_FROM || `"Gallery Pavilion" <noreply@gallerypavilion.com>`,
     to: data.recipientEmail,
     subject: `Gallery Invitation: ${data.galleryTitle}`,
     text: generateInviteEmailText(data),
@@ -290,5 +279,61 @@ export async function testEmailConfig(): Promise<{ success: boolean; error?: str
     console.error('Email configuration test failed:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return { success: false, error: errorMessage }
+  }
+}
+
+// Send approval notification to a photographer when their application is approved
+export async function sendPhotographerApprovalEmail(recipientEmail: string, recipientName?: string): Promise<boolean> {
+  if (!process.env.EMAIL_SERVER_USER || !process.env.EMAIL_SERVER_PASSWORD) {
+    console.warn('Email configuration not found. Skipping approval email send.')
+    return false
+  }
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || `"Gallery Pavilion" <noreply@gallerypavilion.com>`,
+    to: recipientEmail,
+    subject: 'Your photographer application has been approved',
+    text: `Hello ${recipientName || ''},\n\nYour photographer application has been approved by Gallery Pavilion. You can now sign in and start creating galleries and uploading photos.\n\nVisit: https://www.gallerypavilion.com\n\nBest,\nGallery Pavilion Team`,
+    html: `<p>Hello ${recipientName || ''},</p><p>Good news — your photographer application has been <strong>approved</strong> by Gallery Pavilion. You can now sign in and start creating galleries and uploading photos.</p><p><a href="https://www.gallerypavilion.com" style="color:#667eea">Sign in to your account</a></p><p>Best,<br/>Gallery Pavilion Team</p>`
+  }
+
+  try {
+    const transporter = await createTransporter()
+    await transporter.verify()
+    const result = await transporter.sendMail(mailOptions)
+    transporter.close()
+    console.log('Approval email sent:', result.messageId)
+    return true
+  } catch (err) {
+    console.error('Failed to send approval email', err)
+    return false
+  }
+}
+
+// Send rejection notification to a photographer when their application is rejected
+export async function sendPhotographerRejectionEmail(recipientEmail: string, recipientName?: string, reason?: string): Promise<boolean> {
+  if (!process.env.EMAIL_SERVER_USER || !process.env.EMAIL_SERVER_PASSWORD) {
+    console.warn('Email configuration not found. Skipping rejection email send.')
+    return false
+  }
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || `"Gallery Pavilion" <noreply@gallerypavilion.com>`,
+    to: recipientEmail,
+    subject: 'Your photographer application has been reviewed',
+    text: `Hello ${recipientName || ''},\n\nWe reviewed your photographer application and, unfortunately, it was not approved at this time.${reason ? `\n\nReason: ${reason}` : ''}\n\nIf you have questions, please contact support.\n\nBest,\nGallery Pavilion Team`,
+    html: `<p>Hello ${recipientName || ''},</p><p>We reviewed your photographer application and, unfortunately, it was not approved at this time.${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}</p><p>If you have questions, please contact support.</p><p>Best,<br/>Gallery Pavilion Team</p>`
+  }
+
+  try {
+    const transporter = await createTransporter()
+    await transporter.verify()
+    const result = await transporter.sendMail(mailOptions)
+    transporter.close()
+    console.log('Rejection email sent:', result.messageId)
+    return true
+  } catch (err) {
+    console.error('Failed to send rejection email', err)
+    return false
   }
 }

@@ -11,16 +11,34 @@ export async function POST(request: NextRequest) {
   const { prisma } = await import('@/lib/prisma')
   const { sendPhotographerApprovalEmail } = await import('@/lib/email')
 
-  // Use updateMany to avoid throwing when record is not found in some test setups.
-  await prisma.photographer.updateMany({ where: { id }, data: { status: 'approved' } })
-  const updated = await prisma.photographer.findUnique({ where: { id }, include: { user: true } })
-  if (!updated) {
-    try {
-      const all = await prisma.photographer.findMany({ take: 10 })
-      console.warn('approve route: updated photographer not found for id=', id, 'existing sample photographers=', all)
-    } catch (e) {
-      console.warn('approve route: failed to list photographers', e)
+  try {
+    // Update using updateMany but verify with findUnique
+    await prisma.photographer.updateMany({ 
+      where: { id }, 
+      data: { status: 'approved' } 
+    })
+    
+    // Verify the update
+    const updated = await prisma.photographer.findFirst({ 
+      where: { id },
+      include: { user: true }
+    })
+    
+    if (!updated) {
+      console.warn('approve route: photographer not found for id=', id)
+      return new Response(JSON.stringify({ ok: false, error: 'photographer not found' }), { status: 404 })
     }
+    
+    // Send approval email if we have recipient info
+    if (updated.user?.email) {
+      sendPhotographerApprovalEmail(updated.user.email, updated.user?.name).catch(err => 
+        console.error('Approval email send error:', err))
+    }
+
+    return new Response(JSON.stringify({ ok: true }), { status: 200 })
+  } catch (e) {
+    console.error('approve route error:', e)
+    return new Response(JSON.stringify({ ok: false, error: 'failed to update photographer' }), { status: 500 })
   }
 
   // Send approval email if user email exists. Don't block the response on send failure.

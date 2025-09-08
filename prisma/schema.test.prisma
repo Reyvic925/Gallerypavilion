@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./prisma-test-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("TEST_DATABASE_URL")
+}
+
+// Reuse the same models as the main schema - copy below
+// (This file is a trimmed copy referencing the same models used in the project.)
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("photographer")
+  photographer  Photographer?
+}
+
+model Photographer {
+  id        String @id @default(cuid())
+  userId    String @unique
+  name      String
+  status    String?
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  galleries Gallery[]
+}
+
+model Gallery {
+  id             String @id @default(cuid())
+  title          String
+  photographerId String
+  photographer   Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+  invites        Invite[]
+}
+
+model Invite {
+  id         String @id @default(cuid())
+  inviteCode String @unique
+  galleryId  String
+  gallery    Gallery @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  clientEmail String?
+  type        InviteType @default(single_use)
+  status      InviteStatus @default(active)
+  expiresAt   DateTime?
+  maxUsage    Int?
+  usageCount  Int @default(0)
+  usedAt      DateTime?
+
+  canView            Boolean    @default(true)
+  canFavorite        Boolean    @default(true)
+  canComment         Boolean    @default(false)
+  canDownload        Boolean    @default(false)
+  canRequestPurchase Boolean    @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Add minimal other models used by tests if needed
+
+enum InviteType {
+  single_use
+  multi_use
+  time_limited
+}
+
+enum InviteStatus {
+  pending
+  active
+  used
+  expired
+  revoked
+}

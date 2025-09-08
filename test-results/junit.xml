@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="10" failures="0" errors="0" time="2.456">
+    <testsuite name="src/__tests__/api-auth.test.ts" timestamp="2025-09-08T17:52:22.567Z" hostname="BahDMan" tests="3" failures="0" errors="0" skipped="0" time="0.32">
+        <testcase classname="src/__tests__/api-auth.test.ts" name="API route server-side token verification &gt; auth/me returns user when cookie token valid and user exists" time="0.184">
+        </testcase>
+        <testcase classname="src/__tests__/api-auth.test.ts" name="API route server-side token verification &gt; auth/me returns null when token missing or invalid" time="0.029">
+        </testcase>
+        <testcase classname="src/__tests__/api-auth.test.ts" name="API route server-side token verification &gt; invite POST returns 401 when token missing/invalid and 200 when valid and gallery owned" time="0.104">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/jwt-invalid.test.ts" timestamp="2025-09-08T17:52:22.571Z" hostname="BahDMan" tests="2" failures="0" errors="0" skipped="0" time="1.159">
+        <testcase classname="src/__tests__/jwt-invalid.test.ts" name="verifyJwt - invalid and expired tokens &gt; returns null for token with invalid signature" time="0.035">
+        </testcase>
+        <testcase classname="src/__tests__/jwt-invalid.test.ts" name="verifyJwt - invalid and expired tokens &gt; returns null for expired token" time="1.113">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/middleware.test.ts" timestamp="2025-09-08T17:52:22.572Z" hostname="BahDMan" tests="1" failures="0" errors="0" skipped="0" time="0.013">
+        <testcase classname="src/__tests__/middleware.test.ts" name="middleware &gt; redirects to photographer login when no token present" time="0.01">
+            <system-out>
+[middleware] hasAuthHeader: [33mfalse[39m hasAuthCookie: [33mfalse[39m cookieNames: []
+
+            </system-out>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/photographer-login.test.ts" timestamp="2025-09-08T17:52:22.574Z" hostname="BahDMan" tests="4" failures="0" errors="0" skipped="0" time="0.156">
+        <testcase classname="src/__tests__/photographer-login.test.ts" name="photographer-login endpoint &gt; creates a user and sets auth-token cookie and returns redirect" time="0.136">
+        </testcase>
+        <testcase classname="src/__tests__/photographer-login.test.ts" name="photographer-login endpoint &gt; sets token lifetime for 7 days" time="0.006">
+        </testcase>
+        <testcase classname="src/__tests__/photographer-login.test.ts" name="photographer-login endpoint &gt; sets token lifetime for 1 hour" time="0.005">
+        </testcase>
+        <testcase classname="src/__tests__/photographer-login.test.ts" name="photographer-login endpoint &gt; sets token lifetime for 60 seconds" time="0.006">
+        </testcase>
+    </testsuite>
+</testsuites>
