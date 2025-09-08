@@ -40,6 +40,8 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local sqlite test DB
+dev-test.db
 # typescript
 *.tsbuildinfo
 next-env.d.ts
