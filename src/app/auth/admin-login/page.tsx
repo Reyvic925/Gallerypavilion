@@ -40,7 +40,7 @@ export default function AdminLogin() {
           console.log(`Session check attempt ${retries}:`, session)
         }
         
-        if (session?.user?.role === 'admin') {
+        if (session?.user?.role === 'ADMIN') {
           console.log('Admin session established successfully')
           // Use window.location.href for a hard redirect to ensure middleware runs
           window.location.href = '/admin'

@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { Role } from '@prisma/client'
 import { 
   Users, 
   Camera, 
@@ -240,7 +241,7 @@ export default function AdminPanel() {
       }
     }
 
-    if (session?.user?.role === 'admin') {
+    if (session?.user?.role === 'ADMIN') {
       fetchAdminData()
     }
   }, [session])
@@ -978,7 +979,7 @@ export default function AdminPanel() {
     }
   }
 
-  if (!session || session.user.role !== 'admin') {
+  if (!session || session.user.role !== Role.ADMIN) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">

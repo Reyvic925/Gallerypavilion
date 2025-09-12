@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { PhotographerStatus } from '@prisma/client'
+import { Role, PhotographerStatus } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || session.user.role !== 'admin') {
+    if (!session || session.user.role !== Role.ADMIN) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -18,10 +18,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
-    const status = searchParams.get('status')
+    const statusParam = searchParams.get('status')
     const skip = (page - 1) * limit
 
-    const where = status ? { status: status as PhotographerStatus } : {}
+    const where = statusParam 
+      ? { status: statusParam as PhotographerStatus } 
+      : {}
 
     const [photographers, total] = await Promise.all([
       prisma.photographer.findMany({
@@ -33,19 +35,8 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               email: true,
-              name: true
-            }
-          },
-          galleries: {
-            select: {
-              id: true,
-              title: true,
-              status: true
-            }
-          },
-          _count: {
-            select: {
-              galleries: true
+              name: true,
+              role: true
             }
           }
         },
@@ -74,11 +65,11 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || session.user.role !== 'admin') {
+    if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -86,61 +77,35 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { photographerId, action, status } = body
+    const { id, status } = body
 
-    if (!photographerId || !action) {
+    if (!id || !status || !Object.values(PhotographerStatus).includes(status as PhotographerStatus)) {
       return NextResponse.json(
-        { error: 'Photographer ID and action are required' },
+        { error: 'Invalid request body' },
         { status: 400 }
       )
     }
 
-    let updateData: {
-      status?: 'approved' | 'suspended' | 'rejected'
-    } = {}
-
-    switch (action) {
-      case 'approve':
-        updateData = { status: 'approved' }
-        break
-      case 'suspend':
-        updateData = { status: 'suspended' }
-        break
-      case 'reject':
-        updateData = { status: 'rejected' }
-        break
-      case 'reactivate':
-        updateData = { status: 'approved' }
-        break
-      case 'update_status':
-        if (!status) {
-          return NextResponse.json(
-            { error: 'Status is required for update_status action' },
-            { status: 400 }
-          )
-        }
-        updateData = { status }
-        break
-      default:
-        return NextResponse.json(
-          { error: 'Invalid action' },
-          { status: 400 }
-        )
-    }
-
     const photographer = await prisma.photographer.update({
-      where: { id: photographerId },
-      data: updateData,
+      where: { id },
+      data: { status: status as PhotographerStatus },
       include: {
         user: {
           select: {
             id: true,
             email: true,
-            name: true
+            name: true,
+            role: true
           }
         }
       }
     })
+
+    const action = status === PhotographerStatus.APPROVED 
+      ? 'approval' 
+      : status === PhotographerStatus.REJECTED 
+      ? 'rejection'
+      : 'status update'
 
     return NextResponse.json({
       message: `Photographer ${action} successful`,
@@ -159,7 +124,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || session.user.role !== 'admin') {
+    if (!session || session.user.role !== Role.ADMIN) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

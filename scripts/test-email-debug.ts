@@ -13,20 +13,15 @@ async function testEmails() {
     const configTest = await testEmailConfig()
     
     if (!configTest.success) {
-      console.error('Email configuration test failed:', configTest.error)
+      console.error('Email configuration test failed:')
       return
     }
     
     console.log('Email configuration test passed!')
     
     console.log('\nAttempting to send test reset email...')
-    const emailSent = await sendPasswordResetEmail('vameh09@gmail.com', 'http://localhost:3001/test-reset')
-    
-    if (emailSent) {
-      console.log('Test reset email sent successfully!')
-    } else {
-      console.error('Failed to send test reset email')
-    }
+    await sendPasswordResetEmail('vameh09@gmail.com', 'http://localhost:3001/test-reset')
+    console.log('Test reset email sent successfully!')
   } catch (error) {
     console.error('Test failed with error:', error)
   }

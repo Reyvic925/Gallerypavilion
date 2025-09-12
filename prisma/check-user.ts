@@ -25,7 +25,6 @@ async function checkUser(email: string) {
       console.log('\nPhotographer profile:')
       console.log('- ID:', user.photographer.id)
       console.log('- Status:', user.photographer.status)
-      console.log('- Name:', user.photographer.name)
     } else {
       console.log('\n❌ No photographer profile found')
     }

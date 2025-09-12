@@ -24,7 +24,6 @@ async function main() {
     if (user.photographer) {
       console.log('\nPhotographer profile:');
       console.log('- Status:', user.photographer.status);
-      console.log('- Name:', user.photographer.name);
     } else {
       console.log('\nNo photographer profile found');
     }

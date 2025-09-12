@@ -46,8 +46,8 @@ export default withAuth(
     if (path.startsWith('/auth')) {
       if (isAuth && !path.includes('/signup')) {
         // Redirect authenticated users away from auth pages (except signup)
-        const redirectUrl = token?.role === 'admin' ? '/admin' : 
-                          token?.role === 'client' ? '/client' : '/dashboard'
+        const redirectUrl = token?.role === 'ADMIN' ? '/admin' : 
+                          token?.role === 'CLIENT' ? '/client' : '/dashboard'
         return NextResponse.redirect(new URL(redirectUrl, req.url))
       }
       return NextResponse.next()

@@ -29,14 +29,15 @@ async function seedProduction() {
     // Hash the admin password
     const hashedPassword = await bcrypt.hash('admin123', 12)
     
-    // Create admin user
+    // Create admin user with password
     const adminUser = await prisma.user.create({
       data: {
         email: 'admin@gallerypavilion.com',
         name: 'System Administrator',
-        password: hashedPassword,
-        role: 'admin',
-        emailVerified: new Date()
+        role: 'ADMIN',
+        passwordHash: hashedPassword,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     })
     

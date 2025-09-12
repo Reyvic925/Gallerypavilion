@@ -52,81 +52,21 @@ export async function GET(request: NextRequest) {
       prisma.photo.findMany({
         where: { galleryId },
         select: {
-        id: true,
-        title: true,
-        description: true,
-        url: true,
-        thumbnailUrl: true,
-        filename: true,
-        fileSize: true,
-        width: true,
-        height: true,
-        mimeType: true,
-        metadata: true,
-        price: true,
-        isForSale: true,
-        tags: true,
-        category: true,
-        location: true,
-        sortOrder: true,
-        isPrivate: true,
-        createdAt: true,
-        updatedAt: true,
-        
-        // Artwork Information
-        photographerName: true,
-        yearCreated: true,
-        yearPrinted: true,
-        seriesName: true,
-        
-        // Edition & Authenticity
-        editionNumber: true,
-        editionSize: true,
-        signatureType: true,
-        certificateOfAuthenticity: true,
-        certificateId: true,
-        
-        // Materials & Size
-        medium: true,
-        printingTechnique: true,
-        paperType: true,
-        dimensions: true,
-        framingOptions: true,
-        
-        // Context
-        artistStatement: true,
-        exhibitionHistory: true,
-        
-        // Purchase Information
-        shippingDetails: true,
-        returnPolicy: true,
-        
-        // Analytics
-        _count: {
-          select: {
-            favorites: true,
-            photoDownloads: true
-          }
+          id: true,
+          title: true,
+          url: true,
+          thumbnailUrl: true,
+          description: true,
+          metadata: true,
+          createdAt: true,
+          updatedAt: true,
         }
-      }
-    }),
+      }),
       prisma.photo.count({ where: { galleryId } })
     ]);
 
-    // Transform any JSON string fields back to objects/arrays
-    const transformedPhotos = photos.map(photo => ({
-      ...photo,
-      tags: photo.tags ? JSON.parse(photo.tags as string) : [],
-      dimensions: photo.dimensions ? JSON.parse(photo.dimensions as string) : null,
-      framingOptions: photo.framingOptions ? JSON.parse(photo.framingOptions as string) : null,
-      exhibitionHistory: photo.exhibitionHistory ? JSON.parse(photo.exhibitionHistory as string) : null,
-      shippingDetails: photo.shippingDetails ? JSON.parse(photo.shippingDetails as string) : null,
-      favorites: photo._count?.favorites || 0,
-      downloads: photo._count?.photoDownloads || 0
-    }))
-
     return NextResponse.json({
-      photos: transformedPhotos,
+      photos,
       pagination: {
         page,
         limit,
@@ -359,44 +299,26 @@ export async function POST(request: NextRequest) {
 
   // Save photo record to database
   const photo = await prisma.photo.create({
-        data: {
-          galleryId,
-          // Basic Information
-          title: validatedData.title,
-          description: validatedData.description,
-          url: `/uploads/photos/${fileName}`,
-          thumbnailUrl: `/uploads/thumbnails/${thumbnailName}`,
-          filename: fileName,
-          fileSize: file.size,
-          mimeType: file.type,
-          price: validatedData.price,
-          isForSale: validatedData.isForSale,
-          tags: validatedData.tags ? JSON.stringify(validatedData.tags) : undefined,
-          category: validatedData.category,
-          location: validatedData.location,
+    data: {
+      galleryId,
+      title: validatedData.title,
+      url: `/uploads/photos/${fileName}`,
+      thumbnailUrl: `/uploads/thumbnails/${thumbnailName}`,
+      description: validatedData.description || '',
+      metadata: {},
+    },
+  })
 
-  // ...existing code...
-      },
-    })
-
-    return NextResponse.json({
-      // Basic Information
-      id: photo.id,
-      title: photo.title,
-      description: photo.description,
-      url: photo.url,
-      thumbnailUrl: photo.thumbnailUrl,
-      createdAt: photo.createdAt,
-      fileSize: photo.fileSize,
-      mimeType: photo.mimeType,
-      price: photo.price,
-      isForSale: photo.isForSale,
-      tags: photo.tags ? JSON.parse(photo.tags as string) : [],
-      category: photo.category,
-      location: photo.location,
-
-  // ...existing code...
-    }, { status: 201 })
+  return NextResponse.json({
+    id: photo.id,
+    title: photo.title,
+    url: photo.url,
+    thumbnailUrl: photo.thumbnailUrl,
+    description: photo.description,
+    metadata: photo.metadata,
+    createdAt: photo.createdAt,
+    updatedAt: photo.updatedAt,
+  }, { status: 201 })
   } catch (error) {
     console.error('Error uploading photo:', error)
     return NextResponse.json(

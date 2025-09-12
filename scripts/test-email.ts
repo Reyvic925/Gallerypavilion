@@ -5,7 +5,7 @@ async function testEmails() {
   const configTest = await testEmailConfig()
   
   if (!configTest.success) {
-    console.error('Email configuration test failed:', configTest.error)
+    console.error('Email configuration test failed:')
     return
   }
   

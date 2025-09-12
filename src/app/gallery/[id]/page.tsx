@@ -159,9 +159,9 @@ export default function GalleryDetailPage() {
   }
 
   useEffect(() => {
-    if (session?.user?.role === 'photographer' && session?.user?.photographerId && params.id) {
+    if (session?.user?.role === 'PHOTOGRAPHER' && session?.user?.photographerId && params.id) {
       fetchGallery()
-    } else if (session?.user?.role === 'photographer' && !session?.user?.photographerId) {
+    } else if (session?.user?.role === 'PHOTOGRAPHER' && !session?.user?.photographerId) {
       setError('Photographer ID not found in session. Please log out and log back in.')
       setLoading(false)
     }

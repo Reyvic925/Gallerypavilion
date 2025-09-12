@@ -2,32 +2,27 @@ import { NextAuthOptions } from 'next-auth'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
+import { Role } from '@prisma/client'
 import { prisma } from './prisma'
 
 // Types for our custom user and session
 declare module 'next-auth' {
   interface User {
     id: string
-    email: string
-    name?: string
-    role: 'photographer' | 'client' | 'admin'
+    email: string | null
+    name: string | null
+    role: Role
+    image: string | null
     photographerId?: string
-    inviteCode?: string
-    permissions?: {
-      canView: boolean
-      canFavorite: boolean
-      canComment: boolean
-      canDownload: boolean
-      canRequestPurchase: boolean
-    }
   }
 
   interface Session {
     user: {
       id: string
-      email: string
-      name?: string
-      role: 'photographer' | 'client' | 'admin'
+      email: string | null
+      name: string | null
+      role: Role
+      image: string | null
       photographerId?: string
       inviteCode?: string
       permissions?: {
@@ -60,7 +55,7 @@ export const authOptions: NextAuthOptions = {
         id: string;
         email: string;
         name?: string;
-        role: 'photographer' | 'client' | 'admin';
+        role: Role;
         photographerId?: string;
       } | null> {
         if (!credentials?.email || !credentials?.password) {
@@ -74,7 +69,7 @@ export const authOptions: NextAuthOptions = {
           const user = await prisma.user.findFirst({
             where: { 
               email: credentials.email.toLowerCase(),
-              role: 'admin'
+              role: Role.ADMIN
             }
           })
 
@@ -97,12 +92,12 @@ export const authOptions: NextAuthOptions = {
             id: string;
             email: string;
             name?: string;
-            role: 'photographer' | 'client' | 'admin';
+            role: Role;
           } = {
             id: user.id,
             email: user.email,
             name: user.name ?? undefined,
-            role: user.role as 'photographer' | 'client' | 'admin'
+            role: user.role
           }
 
           console.log('Admin login successful')
@@ -124,7 +119,7 @@ export const authOptions: NextAuthOptions = {
         id: string;
         email: string;
         name?: string;
-        role: 'photographer' | 'client' | 'admin';
+        role: Role;
         photographerId?: string;
       } | null> {
         if (!credentials?.email || !credentials?.password) {
@@ -173,7 +168,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Check if user is a photographer
-          if (user.role !== 'photographer') {
+          if (user.role !== Role.PHOTOGRAPHER) {
             console.log('Login failed: user is not a photographer')
             return null
           }
@@ -194,7 +189,7 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             email: user.email,
             name: user.name ?? undefined,
-            role: user.role as 'photographer' | 'client' | 'admin',
+            role: user.role,
             photographerId: user.photographer.id
           }
 
@@ -211,7 +206,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = user.role as 'photographer' | 'client' | 'admin'
+        token.role = user.role
         if ('photographerId' in user) {
           token.photographerId = user.photographerId
         }
@@ -221,7 +216,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as 'photographer' | 'client' | 'admin'
+        session.user.role = token.role as Role
         if (token.photographerId) {
           session.user.photographerId = token.photographerId as string | undefined
         }

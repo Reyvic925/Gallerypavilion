@@ -36,7 +36,7 @@ async function seedProduction() {
         email: 'admin@gallerypavilion.com',
         name: 'System Administrator',
         password: hashedPassword,
-        role: 'admin',
+        role: 'ADMIN',
         emailVerified: new Date()
       }
     })

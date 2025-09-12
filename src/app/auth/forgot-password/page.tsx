@@ -17,7 +17,7 @@ export default function ForgotPassword() {
 
   // Redirect if user is logged in
   if (session) {
-    const redirectUrl = session.user.role === 'admin' ? '/admin' : '/dashboard'
+    const redirectUrl = session.user.role === 'ADMIN' ? '/admin' : '/dashboard'
     router.replace(redirectUrl)
     return null
   }

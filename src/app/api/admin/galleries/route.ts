@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { GalleryStatus, GalleryVisibility } from '@prisma/client'
+import { Role } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || session.user.role !== 'admin') {
+    if (!session || session.user.role !== Role.ADMIN) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -18,15 +18,15 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
-    const status = searchParams.get('status')
+    const isPublished = searchParams.get('isPublished')
     const photographerId = searchParams.get('photographerId')
     const skip = (page - 1) * limit
 
     const where: {
-      status?: GalleryStatus
+      isPublished?: boolean
       photographerId?: string
     } = {}
-    if (status) where.status = status as GalleryStatus
+    if (isPublished !== null) where.isPublished = isPublished === 'true'
     if (photographerId) where.photographerId = photographerId
 
     const [galleries, total] = await Promise.all([
@@ -45,29 +45,24 @@ export async function GET(request: NextRequest) {
               }
             }
           },
-          collections: {
-            include: {
-              photos: {
-                select: {
-                  id: true,
-                  filename: true,
-                  thumbnailUrl: true
-                },
-                take: 1
-              }
-            },
-            take: 1
-          },
-          invites: {
+          photos: {
+            take: 1,
             select: {
               id: true,
-              status: true
+              title: true,
+              url: true,
+              thumbUrl: true
+            }
+          },
+          shareLinks: {
+            select: {
+              id: true,
+              isActive: true
             }
           },
           _count: {
             select: {
-              invites: true,
-              collections: true,
+              shareLinks: true,
               photos: true
             }
           }
@@ -80,35 +75,19 @@ export async function GET(request: NextRequest) {
     ])
 
     // Get view statistics for each gallery
-    const galleriesWithStats = await Promise.all(
-      galleries.map(async (gallery) => {
-        const viewCount = await prisma.analytics.count({
-          where: {
-            type: 'gallery_access',
-            galleryId: gallery.id
-          }
-        })
-
-        const downloadCount = await prisma.analytics.count({
-          where: {
-            type: 'photo_download',
-            galleryId: gallery.id
-          }
-        })
-
-        return {
-          ...gallery,
-          stats: {
-            views: viewCount,
-            downloads: downloadCount,
-            photos: gallery._count.photos,
-            invites: gallery._count.invites,
-            collections: gallery._count.collections
-          },
-          coverPhoto: gallery.collections[0]?.photos[0] || null
-        }
-      })
-    )
+    // Transform galleries with stats
+    const galleriesWithStats = galleries.map(gallery => {
+      return {
+        ...gallery,
+        stats: {
+          photos: gallery._count.photos,
+          shareLinks: gallery._count.shareLinks,
+          isPublished: gallery.isPublished,
+          publishedAt: gallery.publishedAt
+        },
+        coverPhoto: gallery.photos[0] || null
+      }
+    })
 
     return NextResponse.json({
       galleries: galleriesWithStats,
@@ -132,7 +111,7 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || session.user.role !== 'admin') {
+    if (!session || session.user.role !== Role.ADMIN) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -140,7 +119,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { galleryId, action, status, visibility } = body
+    const { galleryId, action } = body
 
     if (!galleryId || !action) {
       return NextResponse.json(
@@ -150,37 +129,22 @@ export async function PUT(request: NextRequest) {
     }
 
     let updateData: {
-      status?: GalleryStatus
-      visibility?: GalleryVisibility
+      isPublished?: boolean
+      publishedAt?: Date | null
     } = {}
 
     switch (action) {
-      case 'archive':
-        updateData = { status: 'archived' }
-        break
-      case 'activate':
-        updateData = { status: 'active' }
-        break
-      case 'suspend':
-        updateData = { status: 'archived' }
-        break
-      case 'update_status':
-        if (!status) {
-          return NextResponse.json(
-            { error: 'Status is required for update_status action' },
-            { status: 400 }
-          )
+      case 'publish':
+        updateData = { 
+          isPublished: true,
+          publishedAt: new Date()
         }
-        updateData = { status }
         break
-      case 'update_visibility':
-        if (!visibility) {
-          return NextResponse.json(
-            { error: 'Visibility is required for update_visibility action' },
-            { status: 400 }
-          )
+      case 'unpublish':
+        updateData = { 
+          isPublished: false,
+          publishedAt: null
         }
-        updateData = { visibility }
         break
       default:
         return NextResponse.json(

@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
           name: `${validatedData.firstName} ${validatedData.lastName}`,
           email: normalizedEmail,
           password: hashedPassword,
-          role: 'photographer'
+          role: 'PHOTOGRAPHER'
         }
       })
       

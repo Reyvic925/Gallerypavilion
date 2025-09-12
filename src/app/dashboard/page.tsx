@@ -249,7 +249,7 @@ export default function DashboardPage() {
 
   // Initial data load
   useEffect(() => {
-    if (session?.user?.role === 'photographer') {
+    if (session?.user?.role === 'PHOTOGRAPHER') {
       Promise.all([fetchGalleries(), fetchAnalytics(), fetchProfile()])
         .finally(() => setLoading(false))
     }

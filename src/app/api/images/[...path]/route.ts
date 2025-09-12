@@ -62,14 +62,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     if (session) {
       // Check if user is the photographer who owns this photo
-      if (session.user.role === 'photographer' && 
+      if (session.user.role === 'PHOTOGRAPHER' && 
           photo.collection && session.user.photographerId === photo.collection.gallery.photographerId) {
         hasAccess = true
         isPhotographer = true
       }
       
       // Check if user is a client with valid invite
-      if (session.user.role === 'client' && session.user.inviteCode && photo.collection) {
+      if (session.user.role === 'CLIENT' && session.user.inviteCode && photo.collection) {
         const invite = photo.collection.gallery.invites.find(
           inv => inv.inviteCode === session.user.inviteCode && 
                  inv.status === 'active' &&
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Check token-based access (for direct links)
-    if (!hasAccess && token && session?.user.role === 'client') {
+    if (!hasAccess && token && session?.user.role === 'CLIENT') {
       const isValidToken = verifyImageAccessToken(token, photoId, session.user.id)
       if (isValidToken) {
         hasAccess = true
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         type: 'photo_view',
         photoId,
         galleryId: photo.collection?.galleryId || null,
-        clientId: session?.user?.role === 'client' ? session.user.id : null,
+        clientId: session?.user?.role === 'CLIENT' ? session.user.id : null,
         metadata: {
           userAgent: request.headers.get('user-agent'),
           ip: clientIp,

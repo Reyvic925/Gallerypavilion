@@ -12,7 +12,7 @@ async function createTestInvite() {
                 data: {
                     email: 'test@photographer.com',
                     name: 'Test Photographer',
-                    role: 'photographer'
+                    role: 'PHOTOGRAPHER'
                 }
             });
             

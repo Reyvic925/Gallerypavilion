@@ -24,7 +24,7 @@ async function createTestData() {
         data: {
           email,
           name: 'Test Client',
-          role: 'client'
+          role: 'CLIENT'
         }
       })
       
