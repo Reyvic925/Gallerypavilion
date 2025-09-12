@@ -100,14 +100,8 @@ export default function MasonryGrid({
       newColumnHeights[shortestColumnIndex] += estimatedHeight
     })
 
-<<<<<<< HEAD
     setPhotoColumns(newPhotoColumns)
-    setColumnHeights(newColumnHeights)
-  }, [photos, containerWidth])
-=======
-  setPhotoColumns(newPhotoColumns)
   }, [photos, containerWidth, getResponsiveColumns])
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
   const handlePhotoClick = (photo: Photo, e: React.MouseEvent) => {
     e.preventDefault()
