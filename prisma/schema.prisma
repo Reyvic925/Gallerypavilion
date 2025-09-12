@@ -701,13 +701,10 @@ model NewsletterSubscription {
   @@map("newsletter_subscriptions")
 }
 
-=======
-  
   @@map("system_settings")
 }
 
 // Enums
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 enum PhotographerStatus {
   pending
   approved
@@ -768,8 +765,6 @@ enum AnalyticsType {
   invite_used
   admin_action
 }
-<<<<<<< HEAD
-=======
 
 model NewsletterSubscription {
   id           String   @id @default(cuid())
@@ -780,4 +775,3 @@ model NewsletterSubscription {
   
   @@map("newsletter_subscriptions")
 }
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
