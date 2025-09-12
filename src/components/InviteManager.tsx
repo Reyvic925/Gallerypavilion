@@ -157,10 +157,7 @@ export default function InviteManager({ galleryId, galleryTitle }: InviteManager
     } catch (error) {
       console.error('Error resending invite:', error)
     }
-  }
-
-
-
+  // ...existing code...
   return (
     <div className="space-y-6">
       {/* Header */}
