@@ -41,12 +41,12 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
-  role          String    @default("user")
+  role          String         @default("user")
   accounts      Account[]
   sessions      Session[]
   clients       Client[]
@@ -66,80 +66,82 @@ model VerificationToken {
 
 // Photography marketplace models
 model Photographer {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  name        String
-  email       String   @unique
-  bio         String?
-  website     String?
-  instagram   String?
-  facebook    String?
-  twitter     String?
-  location    String?
-  avatarUrl   String?
-  coverUrl    String?
-  status      PhotographerStatus @default(pending)
-  galleries   Gallery[]
-  reviews     PhotographerReview[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id        String               @id @default(cuid())
+  userId    String               @unique
+  name      String
+  email     String               @unique
+  bio       String?
+  website   String?
+  instagram String?
+  facebook  String?
+  twitter   String?
+  location  String?
+  avatarUrl String?
+  coverUrl  String?
+  status    PhotographerStatus   @default(pending)
+  galleries Gallery[]
+  reviews   PhotographerReview[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
   @@map("photographers")
 }
 
 model Client {
-  id         String   @id @default(cuid())
-  userId     String?  @unique
-  name       String
-  email      String   @unique
-  phone      String?
-  location   String?
-  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  galleries  Gallery[]
-  invites    ClientInvite[]
-  favorites  WishlistItem[]
-  downloads  PhotoDownload[]
-  purchases  PurchaseRequest[]
-  reviews    PhotographerReview[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  
+  id           String               @id @default(cuid())
+  userId       String?              @unique
+  name         String
+  email        String               @unique
+  phone        String?
+  location     String?
+  user         User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  galleries    Gallery[]
+  invites      ClientInvite[]
+  favorites    WishlistItem[]
+  downloads    PhotoDownload[]
+  purchases    PurchaseRequest[]
+  reviews      PhotographerReview[]
+  photoReviews PhotoReview[] // opposite of PhotoReview.client
+  comments     Comment[] // opposite of Comment.client
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
   @@map("clients")
 }
 
 model Gallery {
-  id             String   @id @default(cuid())
+  id             String            @id @default(cuid())
   name           String
   description    String?
   photographerId String
-  photographer   Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+  photographer   Photographer      @relation(fields: [photographerId], references: [id], onDelete: Cascade)
   clients        Client[]
   visibility     GalleryVisibility @default(private)
-  status         GalleryStatus @default(draft)
+  status         GalleryStatus     @default(draft)
   photos         Photo[]
   invites        Invite[]
   analytics      Analytics[]
-  collection     Collection?  @relation(fields: [collectionId], references: [id])
+  collection     Collection?       @relation(fields: [collectionId], references: [id])
   collectionId   String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
   @@map("galleries")
 }
 
 model Collection {
-  id         String    @id @default(cuid())
-  name       String
-  userId     String
-  galleries  Gallery[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  
+  id        String    @id @default(cuid())
+  name      String
+  userId    String
+  galleries Gallery[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
   @@map("collections")
 }
 
 model Photo {
-  id           String   @id @default(cuid())
+  id           String            @id @default(cuid())
   title        String?
   description  String?
   filename     String
@@ -150,16 +152,17 @@ model Photo {
   thumbnailUrl String
   url          String
   galleryId    String
-  gallery      Gallery  @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  gallery      Gallery           @relation(fields: [galleryId], references: [id], onDelete: Cascade)
   favorites    WishlistItem[]
   downloads    PhotoDownload[]
   purchases    PurchaseRequest[]
   reviews      PhotoReview[]
+  comments     Comment[] // opposite of Comment.photo
   analytics    Analytics[]
   metadata     Json?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
   @@map("photos")
 }
 
@@ -178,7 +181,7 @@ model WishlistItem {
 
 model PhotoReview {
   id        String   @id @default(cuid())
-  rating    Int      // 1-5 stars
+  rating    Int // 1-5 stars
   comment   String?
   photoId   String
   userId    String
@@ -193,54 +196,54 @@ model PhotoReview {
 }
 
 model PhotographerReview {
-  id             String   @id @default(cuid())
-  rating         Int      // 1-5 stars
+  id             String       @id @default(cuid())
+  rating         Int // 1-5 stars
   comment        String?
   photographerId String
   userId         String
   clientId       String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   photographer   Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
-  client         Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  
+  client         Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
   @@unique([userId, photographerId])
   @@map("photographer_reviews")
 }
 
 model Analytics {
   id         String   @id @default(cuid())
-  type       String   // 'new_photo', 'price_change', 'purchase_update', 'gallery_invite'
+  type       String // 'new_photo', 'price_change', 'purchase_update', 'gallery_invite'
   galleryId  String?
   photoId    String?
   userId     String?
   clientIp   String?
   inviteCode String?
-  metadata   Json?    // Additional data like user agent, duration, etc.
+  metadata   Json? // Additional data like user agent, duration, etc.
   gallery    Gallery? @relation(fields: [galleryId], references: [id], onDelete: Cascade)
   photo      Photo?   @relation(fields: [photoId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
-  
+
   @@map("analytics")
 }
 
 model SystemSettings {
-  id         String   @id @default(cuid())
-  key        String   @unique
-  value      Json
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("system_settings")
 }
 
 model NewsletterSubscription {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  subscribedAt DateTime @default(now())
-  isActive     Boolean  @default(true)
+  id             String    @id @default(cuid())
+  email          String    @unique
+  subscribedAt   DateTime  @default(now())
+  isActive       Boolean   @default(true)
   unsubscribedAt DateTime?
-  
+
   @@map("newsletter_subscriptions")
 }
 
@@ -307,17 +310,17 @@ enum AnalyticsType {
 }
 
 model Invite {
-  id          String      @id @default(cuid())
-  code        String      @unique
-  type        InviteType  @default(single_use)
-  status      InviteStatus @default(pending)
-  galleryId   String
-  gallery     Gallery     @relation(fields: [galleryId], references: [id], onDelete: Cascade)
-  clients     ClientInvite[]
-  expiresAt   DateTime?
-  usedAt      DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        String         @id @default(cuid())
+  code      String         @unique
+  type      InviteType     @default(single_use)
+  status    InviteStatus   @default(pending)
+  galleryId String
+  gallery   Gallery        @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  clients   ClientInvite[]
+  expiresAt DateTime?
+  usedAt    DateTime?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@map("invites")
 }
@@ -364,31 +367,31 @@ model Comment {
 }
 
 model PurchaseRequest {
-  id          String             @id @default(cuid())
+  id          String              @id @default(cuid())
   photoId     String
   clientId    String
-  photo       Photo              @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  client      Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  photo       Photo               @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  client      Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
   licenseType PurchaseLicenseType
-  status      PurchaseStatus     @default(pending)
+  status      PurchaseStatus      @default(pending)
   price       Float
-  currency    String             @default("USD")
+  currency    String              @default("USD")
   message     String?
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 
   @@map("purchase_requests")
 }
 
 model Notification {
   id        String   @id @default(cuid())
-  type      String   // 'new_photo', 'price_change', 'purchase_update', 'gallery_invite'
+  type      String // 'new_photo', 'price_change', 'purchase_update', 'gallery_invite'
   title     String
   message   String
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   isRead    Boolean  @default(false)
-  data      Json?    // Additional data like photoId, galleryId, etc.
+  data      Json? // Additional data like photoId, galleryId, etc.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
