@@ -2,13 +2,8 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Copy, Edit, Trash2, Plus, Clock, CheckCircle, XCircle, AlertCircle, BarChart3, Users } from 'lucide-react'
-<<<<<<< HEAD
-import { useState, useEffect } from 'react'
-import { generateInviteCode } from '@/lib/utils'
-=======
 import { useState, useEffect, useCallback } from 'react'
 import { generateInviteCode as _generateInviteCode } from '@/lib/utils'
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 import CreateInviteModal from './CreateInviteModal'
 import InviteAnalytics from './InviteAnalytics'
 
@@ -49,11 +44,7 @@ export default function InviteManager({ galleryId, galleryTitle }: InviteManager
   const [activeTab, setActiveTab] = useState<'invites' | 'analytics'>('invites')
 
   // Fetch invites from API
-<<<<<<< HEAD
-  const fetchInvites = async () => {
-=======
   const fetchInvites = useCallback(async () => {
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
     try {
       setLoading(true)
       const params = new URLSearchParams()
@@ -72,21 +63,13 @@ export default function InviteManager({ galleryId, galleryTitle }: InviteManager
     } finally {
       setLoading(false)
     }
-<<<<<<< HEAD
-  }
-=======
   }, [galleryId, filterStatus, filterType])
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
   useEffect(() => {
     if (galleryId) {
       fetchInvites()
     }
-<<<<<<< HEAD
-  }, [galleryId, filterStatus, filterType])
-=======
   }, [galleryId, filterStatus, filterType, fetchInvites])
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
   // Filter invites based on gallery and filters
   const filteredInvites = invites.filter(invite => {
@@ -117,11 +100,11 @@ export default function InviteManager({ galleryId, galleryTitle }: InviteManager
   }
 
   const copyInviteLink = (invite: Invite) => {
-<<<<<<< HEAD
-    const link = `${window.location.origin}/invite/${invite.inviteCode}`
-=======
     const link = `${window.location.origin}/client/${invite.inviteCode}`
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
+    navigator.clipboard.writeText(link)
+    // In a real app, show a toast notification
+    alert('Invite link copied to clipboard!')
+  }
     navigator.clipboard.writeText(link)
     // In a real app, show a toast notification
     alert('Invite link copied to clipboard!')
