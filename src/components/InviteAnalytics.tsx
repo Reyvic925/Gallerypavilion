@@ -307,7 +307,7 @@ export default function InviteAnalytics({ galleryId }: InviteAnalyticsProps) {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                label={(props: { name: string; percent: number | undefined }) => `${props.name} ${props.percent ? (props.percent * 100).toFixed(0) : 0}%`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"

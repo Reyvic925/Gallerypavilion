@@ -170,11 +170,7 @@ export default function MasonryGrid({
                         <input
                           type="checkbox"
                           checked={selectedPhotos.has(photo.id)}
-<<<<<<< HEAD
-                          onChange={(e) => handleSelectChange(photo.id, e.target.checked, e as any)}
-=======
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSelectChange(photo.id, e.target.checked, e.nativeEvent as unknown as React.MouseEvent)}
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
                           className="w-5 h-5 text-purple-600 bg-white/20 border-white/30 rounded focus:ring-purple-500 focus:ring-2"
                         />
                       </div>

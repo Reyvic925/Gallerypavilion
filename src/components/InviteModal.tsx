@@ -38,7 +38,7 @@ export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }
   });
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -252,7 +252,6 @@ export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }
                       </label>
                     ))}
                   </div>
-                </div>
                 </div>
 
                 {/* Submit Button */}

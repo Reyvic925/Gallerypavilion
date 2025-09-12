@@ -69,11 +69,7 @@ export function generateImageAccessToken(
   clientId: string,
   expiresAt: number
 ): string {
-<<<<<<< HEAD
-  const secret = process.env.NEXTAUTH_SECRET || 'fallback-secret'
-=======
   const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'fallback-secret'
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
   const payload = `${photoId}:${clientId}:${expiresAt}`
   
   const hmac = crypto.createHmac('sha256', secret)
@@ -114,11 +110,7 @@ export function verifyImageAccessToken(
     }
     
     // Verify signature
-<<<<<<< HEAD
-    const secret = process.env.NEXTAUTH_SECRET || 'fallback-secret'
-=======
-  const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'fallback-secret'
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
+    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'fallback-secret'
     const hmac = crypto.createHmac('sha256', secret)
     hmac.update(payload)
     const expectedSignature = hmac.digest('hex')
