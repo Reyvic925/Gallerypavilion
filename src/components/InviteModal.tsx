@@ -2,11 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-<<<<<<< HEAD
-import { X, Mail, Send } from 'lucide-react';
-=======
 import { X, Mail, Calendar, Users, Settings, Send } from 'lucide-react';
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
 interface InviteModalProps {
   isOpen: boolean;
@@ -17,18 +13,6 @@ interface InviteModalProps {
 
 interface InviteFormData {
   clientEmail: string;
-<<<<<<< HEAD
-  type: string;
-  expiresAt: string;
-  maxUsage: number;
-  canView: boolean;
-  canDownload?: boolean;
-  canShare?: boolean;
-  canFavorite?: boolean;
-  canComment?: boolean;
-  canRequestPurchase?: boolean;
-  restrictedPhotos?: string[];
-=======
   type: 'single_use' | 'multi_use' | 'time_limited';
   expiresAt: string;
   maxUsage: number;
@@ -37,7 +21,8 @@ interface InviteFormData {
   canComment: boolean;
   canDownload: boolean;
   canRequestPurchase: boolean;
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
+  restrictedPhotos?: string[];
+}
 }
 
 export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }: InviteModalProps) {
@@ -75,15 +60,9 @@ export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }
         },
         body: JSON.stringify({
           galleryId,
-<<<<<<< HEAD
-          clientEmail: formData.clientEmail,
-          canView: true,
-          canRequestPurchase: true,
-=======
           ...formData,
           expiresAt: formData.expiresAt || undefined,
           maxUsage: formData.type === 'multi_use' ? formData.maxUsage : undefined,
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
         }),
       });
 
@@ -116,13 +95,8 @@ export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }
     }
   };
 
-<<<<<<< HEAD
-  const handleInputChange = (field: keyof InviteFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-=======
   const handleInputChange = (field: keyof InviteFormData, value: InviteFormData[keyof InviteFormData]) => {
     setFormData(prev => ({ ...prev, [field]: value } as InviteFormData));
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
   };
 
   return (
@@ -150,11 +124,7 @@ export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Invite Client</h2>
-<<<<<<< HEAD
-                  <p className="text-gray-600 mt-1">Send an invitation to view "{galleryTitle}"</p>
-=======
                   <p className="text-gray-600 mt-1">Send an invitation to view &quot;{galleryTitle}&quot;</p>
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
                 </div>
                 <button
                   onClick={onClose}
@@ -201,15 +171,6 @@ export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }
                   </div>
                 </div>
 
-<<<<<<< HEAD
-                {/* Information about permissions */}
-                <div className="text-sm text-gray-600 p-4 bg-gray-50 rounded-lg">
-                  <p>Invited clients will be able to:</p>
-                  <ul className="list-disc list-inside mt-2">
-                    <li>View photos in this gallery</li>
-                    <li>Request photo purchases</li>
-                  </ul>
-=======
                 {/* Invite Type */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -297,7 +258,7 @@ export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }
                       </label>
                     ))}
                   </div>
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
+                </div>
                 </div>
 
                 {/* Submit Button */}
