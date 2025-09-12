@@ -23,7 +23,6 @@ interface InviteFormData {
   canRequestPurchase: boolean;
   restrictedPhotos?: string[];
 }
-}
 
 export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }: InviteModalProps) {
   const [formData, setFormData] = useState<InviteFormData>({
