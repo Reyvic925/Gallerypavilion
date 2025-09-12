@@ -1,10 +1,5 @@
-'use client';
-
-<<<<<<< HEAD
-import { useState, useEffect } from 'react';
-=======
+"use client";
 import { useState, useEffect, useCallback } from 'react';
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 import { motion } from 'framer-motion';
 import {
   BarChart,
@@ -20,25 +15,15 @@ import {
   LineChart,
   Line,
 } from 'recharts';
-import {
   TrendingUp,
   Users,
   Mail,
-<<<<<<< HEAD
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  BarChart3,
-  Calendar,
-=======
   CheckCircle,
   AlertCircle,
   BarChart3,
   Calendar,
   Clock as _Clock,
   XCircle as _XCircle,
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 } from 'lucide-react';
 
 interface InviteAnalyticsProps {
@@ -89,11 +74,7 @@ interface AnalyticsData {
   period: number;
 }
 
-<<<<<<< HEAD
 const COLORS = ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444'];
-=======
-const _COLORS = ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444'];
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
 export default function InviteAnalytics({ galleryId }: InviteAnalyticsProps) {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
@@ -101,11 +82,7 @@ export default function InviteAnalytics({ galleryId }: InviteAnalyticsProps) {
   const [period, setPeriod] = useState(30);
   const [error, setError] = useState<string | null>(null);
 
-<<<<<<< HEAD
-  const fetchAnalytics = async () => {
-=======
   const fetchAnalytics = useCallback(async () => {
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
     try {
       setLoading(true);
       const response = await fetch(`/api/gallery/${galleryId}/invites/analytics?period=${period}`);
@@ -123,21 +100,13 @@ export default function InviteAnalytics({ galleryId }: InviteAnalyticsProps) {
     } finally {
       setLoading(false);
     }
-<<<<<<< HEAD
-  };
-=======
   }, [galleryId, period]);
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
   useEffect(() => {
     if (galleryId) {
       fetchAnalytics();
     }
-<<<<<<< HEAD
-  }, [galleryId, period]);
-=======
   }, [galleryId, period, fetchAnalytics]);
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
   if (loading) {
     return (
