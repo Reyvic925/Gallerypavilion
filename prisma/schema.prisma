@@ -51,6 +51,7 @@ model User {
   sessions      Session[]
   clients       Client[]
   notifications Notification[]
+  photographer  Photographer?
 
   @@map("users")
 }
@@ -68,6 +69,7 @@ model VerificationToken {
 model Photographer {
   id        String               @id @default(cuid())
   userId    String               @unique
+  user      User                 @relation(fields: [userId], references: [id])
   name      String
   email     String               @unique
   bio       String?

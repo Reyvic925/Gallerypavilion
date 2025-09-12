@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
@@ -146,7 +148,6 @@ body {
   animation: gradientShift 3s ease infinite;
 }
 
-<<<<<<< HEAD
 /* Interactive Hover Effects */
 .hover-lift {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -241,13 +242,6 @@ body {
   border-color: rgba(255, 255, 255, 0.2);
   color: white;
 }
-=======
-
-
-
-
-
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
 /* Refined Card Styles */
 .gallery-card {

@@ -17,7 +17,6 @@ async function main() {
     if (user) {
       console.log('User ID:', user.id)
       console.log('User Role:', user.role)
-      console.log('Has Password:', !!user.password)
     }
 
     // 2. Check Photographer table

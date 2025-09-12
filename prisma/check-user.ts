@@ -20,7 +20,6 @@ async function checkUser(email: string) {
     console.log('User found:')
     console.log('- Email:', user.email)
     console.log('- Role:', user.role)
-    console.log('- Has password:', !!user.password)
     
     if (user.photographer) {
       console.log('\nPhotographer profile:')
