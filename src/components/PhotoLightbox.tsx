@@ -399,11 +399,7 @@ export default function PhotoLightbox({
                     <h3 className="text-sm font-semibold text-white border-b border-white/10 pb-2">Photographer</h3>
                     <div className="text-sm text-gray-300">
                       <div className="font-medium text-white">{currentPhoto.photographer.name}</div>
-<<<<<<< HEAD
                       <div className="text-gray-400">{currentPhoto.photographer?.email ?? 'Contact not available'}</div>
-=======
-                      <div className="text-gray-400">{currentPhoto.photographer.email}</div>
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
                     </div>
                   </div>
                 )}

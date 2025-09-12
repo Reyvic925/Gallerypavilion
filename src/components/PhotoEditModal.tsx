@@ -1,12 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-<<<<<<< HEAD
-import { X, DollarSign, Tag, MapPin, Image, Award, FileText } from 'lucide-react'
-=======
 import NextImage from 'next/image'
 import { X, DollarSign, Tag, MapPin, Image as IconImage, Award, FileText } from 'lucide-react'
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
 interface Photo {
   id: string

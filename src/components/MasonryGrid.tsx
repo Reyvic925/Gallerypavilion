@@ -1,15 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-<<<<<<< HEAD
-import { useState, useEffect, useRef } from 'react'
-import Image from 'next/image'
-import { Heart, Eye, Download, Star, DollarSign, Edit, Trash2 } from 'lucide-react'
-=======
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import { Heart, Download, Star, DollarSign, Edit, Trash2 } from 'lucide-react'
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
 interface Photo {
   id: string
@@ -61,30 +55,18 @@ export default function MasonryGrid({
   showActions = false,
   columns = 4
 }: MasonryGridProps) {
-<<<<<<< HEAD
-  const [columnHeights, setColumnHeights] = useState<number[]>(new Array(columns).fill(0))
-=======
   // columnHeights tracking removed as it's unused in rendering
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
   const [photoColumns, setPhotoColumns] = useState<Photo[][]>(new Array(columns).fill(null).map(() => []))
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
   // Calculate responsive columns
-<<<<<<< HEAD
-  const getResponsiveColumns = () => {
-=======
   const getResponsiveColumns = useCallback(() => {
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
     if (containerWidth < 640) return 2
     if (containerWidth < 1024) return 3
     if (containerWidth < 1280) return 4
     return 5
-<<<<<<< HEAD
-  }
-=======
   }, [containerWidth])
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 
   // Update container width on resize
   useEffect(() => {

@@ -31,15 +31,10 @@ export default function InviteModal({ isOpen, onClose, galleryId, galleryTitle }
     expiresAt: '',
     maxUsage: 1,
     canView: true,
-<<<<<<< HEAD
-    canDownload: false,
-    canShare: false,
-=======
     canFavorite: true,
     canComment: false,
     canDownload: false,
     canRequestPurchase: true,
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
   });
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);

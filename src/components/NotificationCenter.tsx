@@ -1,14 +1,8 @@
 'use client'
 
-<<<<<<< HEAD
-import { useState, useEffect, useRef } from 'react'
-import { Bell, X, Check, CheckCheck, Trash2, Eye } from 'lucide-react'
-import { useSession } from 'next-auth/react'
-=======
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Bell, X, Check } from 'lucide-react'
 import { useSession } from '@/hooks/useAuth'
->>>>>>> e2f1b7a994117b9fb44ea004e697ba6989c4c810
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Notification {
@@ -34,7 +28,7 @@ export default function NotificationCenter() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(false)
 <<<<<<< HEAD
-  const [hasMore, setHasMore] = useState(false)
+  // hasMore is not currently used but kept in the API response shape
   const [fetchError, setFetchError] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
